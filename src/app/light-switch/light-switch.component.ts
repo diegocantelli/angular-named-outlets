@@ -24,13 +24,21 @@ export class LightSwitchComponent implements OnInit {
 
   flipSwitch(){
     this.state$.pipe(
-      take(1),
-      tap(state => this.doFlipSwitch(state))
-    ).subscribe();
+      // a cada execucao do subscribe, é chamado metodo doFlipSwitch, que por sua vez acaba alterando os parametros de rota,
+      // que consequentemente dispara uma nova emissao para esta observable, entrando assim em um loop infinito.
+      // o take serve para pegarmos somente a primeira emissao, que sera o inverso dos parametros de rota atuais.
+      take(1)
+    )
+    // este subscribe é necessário para poder executar o pipeline da observable
+    // a cada chamada deste subscribe e chamado o metodo doFlipSwitch que altera os parametros de rota,
+    // por isso e necessario o take(1), para nao entrar em loop infinito
+    .subscribe(state => this.doFlipSwitch(state));
   }
 
   private doFlipSwitch(state: string){
     state = state === 'on' ? 'off' : 'on';
+
+    console.log('doFlipSwitch', state);
 
     // altera os paarmetros da rota atual
     this.router.navigate([
