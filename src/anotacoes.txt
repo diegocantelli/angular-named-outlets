@@ -1,0 +1,2 @@
+-- comando que gera um componente com um modulo associado e cria uma rota(lazy loading) no arquivo de rotas especificado
+ng g module light-bulb --route=bulb --module=app.routing.module
