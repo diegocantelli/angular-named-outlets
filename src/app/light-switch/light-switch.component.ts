@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-light-switch',
@@ -7,7 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LightSwitchComponent implements OnInit {
 
-  constructor() { }
+  state$: Observable<string> = this.route.params.pipe(
+    map(params => params['state'])
+  )
+
+  // ActivatedRoute obtem a rota ativa
+  constructor(private route: ActivatedRoute) { }
+
 
   ngOnInit(): void {
   }
