@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map, Observable, take, tap } from 'rxjs';
 
 @Component({
   selector: 'app-light-switch',
@@ -15,10 +15,27 @@ export class LightSwitchComponent implements OnInit {
   )
 
   // ActivatedRoute obtem a rota ativa
-  constructor(private route: ActivatedRoute) { }
+  // Router possibilita navegar entre rotas
+  constructor(private route: ActivatedRoute, private router: Router) { }
 
 
   ngOnInit(): void {
+  }
+
+  flipSwitch(){
+    this.state$.pipe(
+      take(1),
+      tap(state => this.doFlipSwitch(state))
+    ).subscribe();
+  }
+
+  private doFlipSwitch(state: string){
+    state = state === 'on' ? 'off' : 'on';
+
+    // altera os paarmetros da rota atual
+    this.router.navigate([
+      { outlets: {bulb: state, switch: state} }
+    ])
   }
 
 }
