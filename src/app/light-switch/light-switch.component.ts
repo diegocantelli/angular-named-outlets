@@ -9,6 +9,7 @@ import { map, Observable } from 'rxjs';
 })
 export class LightSwitchComponent implements OnInit {
 
+  // essa observable irá retornar o valor do parametro state(on|off)
   state$: Observable<string> = this.route.params.pipe(
     map(params => params['state'])
   )
