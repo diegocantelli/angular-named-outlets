@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { map, Observable, take } from 'rxjs';
 
 @Component({
   selector: 'app-light-bulb',
@@ -15,9 +15,26 @@ export class LightBulbComponent implements OnInit {
   )
 
   // ActivatedRoute obtem a rota ativa
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
+    this.state$.pipe(
+      take(1)
+    ).subscribe(state => this.openPopupWindow(state));
+  }
+
+  private openPopupWindow(state: string) {
+    window.open(`http://localhost:4200/(switch:${state})`, '__blank', 'height=100,width=100');
+
+    // fica escutando da janela popup um eventdo do tipo message, que sera emitido via postMessage
+    window.addEventListener('message', (event: MessageEvent) => {
+      //verifica se recebeu da janela popup um postmessage valido e que inicie com os valores on ou off
+      if(event.data && /^(on|off)/.test(event.data)) {
+        this.router.navigate([
+          { outlets: {bulb: event.data, switch: event.data} }
+        ]);
+      }
+    })
   }
 
 }

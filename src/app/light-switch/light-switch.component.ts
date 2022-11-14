@@ -38,12 +38,20 @@ export class LightSwitchComponent implements OnInit {
   private doFlipSwitch(state: string){
     state = state === 'on' ? 'off' : 'on';
 
-    console.log('doFlipSwitch', state);
-
-    // altera os paarmetros da rota atual
-    this.router.navigate([
-      { outlets: {bulb: state, switch: state} }
-    ])
+    //window.opener: mantem uma referencia da janela que abriu outra janela
+    //caso possua uma referencia, significa que esta janela foi aberta por outra janela
+    if(!window.opener){
+      // altera os paarmetros da rota atual
+      this.router.navigate([
+        { outlets: {bulb: state, switch: state} }
+      ])
+    } else {
+      this.router.navigate([
+        { outlets: {switch: state} }
+      ]);
+      // envia uma mensagem via postMessage com o novo valor de state para a janela responsavel por abrir este popup
+      window.opener.postMessage(`${state}`, '*');
+    }
   }
 
 }
