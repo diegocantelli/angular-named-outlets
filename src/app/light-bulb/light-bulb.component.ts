@@ -14,17 +14,24 @@ export class LightBulbComponent implements OnInit {
     map(params => params['state'])
   )
 
+  popupWindow!: Window | null;
+
   // ActivatedRoute obtem a rota ativa
   constructor(private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
+
+  }
+
+  openLightSwitchPopup(){
     this.state$.pipe(
       take(1)
     ).subscribe(state => this.openPopupWindow(state));
   }
 
   private openPopupWindow(state: string) {
-    window.open(`http://localhost:4200/(switch:${state})`, '__blank', 'height=100,width=100');
+
+    this.popupWindow = window.open(`http://localhost:4200/(switch:${state})`, '__blank', 'height=100,width=100');
 
     // fica escutando da janela popup um eventdo do tipo message, que sera emitido via postMessage
     window.addEventListener('message', (event: MessageEvent) => {

@@ -1,3 +1,8 @@
 <!-- ira acrescentar a classe bulb-on conforme o valor do parametro da rota for alterado
 este valor sera alterado conforme o click do botao, definido no componente light-switch -->
 <div class="bulb" [class.bulb-on]="(state$ | async) === 'on'"></div>
+
+<!-- o navegador nao bloqueia popus desde que seja fruto da acao do usuario -->
+<div>
+  <button (click)="openLightSwitchPopup()">{{ popupWindow ? 'Fechar' : 'Abrir'}} popup interruptor</button>
+</div>
