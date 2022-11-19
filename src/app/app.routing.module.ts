@@ -1,5 +1,7 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
+import { LightBulbGuard } from "./guards/light-bulb.guard";
+import { LightSwitchGuard } from "./guards/light-switch.guard";
 
 const routes: Routes = [
   {
@@ -10,12 +12,14 @@ const routes: Routes = [
   {
     path: ':state',
     loadChildren: () => import('./light-bulb/light-bulb.module').then(m => m.LightBulbModule),
-    outlet: 'bulb'
+    outlet: 'bulb',
+    canLoad: [ LightBulbGuard ]
   },
   {
     path: ':state',
     loadChildren: () => import('./light-switch/light-switch.module').then(m => m.LightSwitchModule),
-    outlet: 'switch'
+    outlet: 'switch',
+    canLoad: [ LightSwitchGuard ]
   }
 ];
 
