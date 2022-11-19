@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable, take } from 'rxjs';
+import { fromEvent, map, Observable, Subject, take, takeUntil, tap } from 'rxjs';
 
 @Component({
   selector: 'app-light-bulb',
@@ -15,6 +15,8 @@ export class LightBulbComponent implements OnInit {
   )
 
   popupWindow!: Window | null;
+
+  private popupCLosed: Subject<void> = new Subject<void>();
 
   // ActivatedRoute obtem a rota ativa
   constructor(private route: ActivatedRoute, private router: Router) { }
@@ -34,21 +36,26 @@ export class LightBulbComponent implements OnInit {
     this.popupWindow = window.open(`http://localhost:4200/(switch:${state})`, '__blank', 'height=100,width=100');
     this.startCheckingPopupWindow();
 
-    // fica escutando da janela popup um eventdo do tipo message, que sera emitido via postMessage
-    window.addEventListener('message', (event: MessageEvent) => {
-      //verifica se recebeu da janela popup um postmessage valido e que inicie com os valores on ou off
-      if(event.data && /^(on|off)/.test(event.data)) {
-        this.router.navigate([
-          { outlets: {bulb: event.data, switch: event.data} }
-        ]);
-      }
-    })
+    // Cria uma observable com base em um evento que ocorre em um elemento
+    fromEvent(window, 'message')
+      .pipe(
+        //fica escutando o evendo de postmessage até que popupClosed emita um valor
+        takeUntil(this.popupCLosed),
+        tap((event: any) => {
+          if(event.data && /^(on|off)/.test(event.data)) {
+            this.router.navigate([
+              { outlets: {bulb: event.data, switch: event.data} }
+            ]);
+          }
+        })
+      ).subscribe()
   }
 
   // verifica a cada 500ms se a janela popup foi fechada
   private startCheckingPopupWindow(){
     const interval = setInterval(() => {
       if(this.popupWindow?.closed){
+        this.popupCLosed.next();
         this.popupWindow = null;
         clearInterval(interval);
       }
