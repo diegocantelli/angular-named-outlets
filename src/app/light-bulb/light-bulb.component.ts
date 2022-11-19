@@ -32,6 +32,7 @@ export class LightBulbComponent implements OnInit {
   private openPopupWindow(state: string) {
 
     this.popupWindow = window.open(`http://localhost:4200/(switch:${state})`, '__blank', 'height=100,width=100');
+    this.startCheckingPopupWindow();
 
     // fica escutando da janela popup um eventdo do tipo message, que sera emitido via postMessage
     window.addEventListener('message', (event: MessageEvent) => {
@@ -42,6 +43,16 @@ export class LightBulbComponent implements OnInit {
         ]);
       }
     })
+  }
+
+  // verifica a cada 500ms se a janela popup foi fechada
+  private startCheckingPopupWindow(){
+    const interval = setInterval(() => {
+      if(this.popupWindow?.closed){
+        this.popupWindow = null;
+        clearInterval(interval);
+      }
+    }, 500);
   }
 
 }
