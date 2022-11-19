@@ -26,9 +26,13 @@ export class LightBulbComponent implements OnInit {
   }
 
   openLightSwitchPopup(){
-    this.state$.pipe(
-      take(1)
-    ).subscribe(state => this.openPopupWindow(state));
+    if(!this.popupWindow){
+      this.state$.pipe(
+        take(1)
+      ).subscribe(state => this.openPopupWindow(state));
+    } else {
+      this.popupWindow.close();
+    }
   }
 
   private openPopupWindow(state: string) {
